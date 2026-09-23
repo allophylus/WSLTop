@@ -1,5 +1,7 @@
 # WSL Top
 
+[WSL (Windows Subsystem for Linux)](https://learn.microsoft.com/windows/wsl/about) lets you run a real Linux environment — including most command-line tools, utilities, and apps — directly on Windows, without a separate VM or dual-boot. WSL Top is a [mactop](https://github.com/context-labs/mactop)-inspired, `htop`/`btop`-style terminal dashboard built specifically for that environment: it shows Linux-side metrics from inside WSL alongside Windows host metrics (CPU, RAM, and optionally full sensor data), all in one live view.
+
 Zero-npm-dependency terminal monitor for WSL — no packages to install, just Node.js built-ins. Full host sensor coverage (GPU/iGPU utilization, fan speeds, voltage rails, accurate CPU package temperature, and the raw "all sensors" view) is an optional feature that requires installing LibreHardwareMonitor on Windows; without it, WSL Top still runs fine and shows `-` for those readings.
 
 It renders live WSL CPU, memory, swap, load, uptime, network, disk, sensor, chart, and top-process metrics from `/proc` and `/sys`. When `powershell.exe` is available inside WSL, it also shows lightweight Windows host CPU and RAM metrics.
@@ -175,6 +177,18 @@ Sensors  -   BAT1 51% Discharging 1.5W   Intel(R) Graphics 97.8% util 1.8GB/16GB
 ```
 
 Temperature may still show `-` if LibreHardwareMonitor cannot access temperature sensors on the machine.
+
+## Tested environment
+
+WSL Top is developed and tested against:
+
+- **WSL**: version `2.7.14.0` (`wsl.exe --version`, WSL2 architecture)
+- **Kernel**: `6.18.33.2-microsoft-standard-WSL2`
+- **Linux distro**: Ubuntu 24.04.5 LTS (Noble Numbat)
+- **Windows**: 10.0.26100.9448 (WSLg 1.0.73.2)
+- **Node.js**: >= 18 (see `engines` in `package.json`)
+
+Run `wsl.exe --version` from a Windows terminal (or `cat /proc/version` from inside WSL) to check your own versions. Other WSL2/Ubuntu combinations are likely to work but haven't been explicitly verified.
 
 ## Run
 
