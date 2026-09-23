@@ -961,9 +961,19 @@ function compactCellLines(cell, width) {
   return compactChartLines(cell.metric, width);
 }
 
+// Plain-percentage meters (GPU, BATTERY) already stamp their value onto the
+// bar itself (see meterValueText), so repeating it in the title would show
+// the same number twice. Rate-based meters (GPU PWR) and non-meter
+// sparklines (TEMP) don't stamp a value onto their body, so they still need
+// it in the title - it's the only place the reading appears.
+function chartHeaderTitle(metric) {
+  if (metric.type === 'meter' && !metric.rateLabel) return metric.title;
+  return `${metric.title} ${metric.value}`;
+}
+
 function compactChartLines(metric, width) {
   const innerWidth = Math.max(10, width);
-  const title = `${metric.title} ${metric.value}`;
+  const title = chartHeaderTitle(metric);
   const label = truncateVisible(title, innerWidth).padEnd(innerWidth);
   const spark = metric.type === 'meter' ? meterBarLine(metric, innerWidth) : verticalChart(metric, innerWidth, 1)[0];
   return [label, spark];
@@ -976,7 +986,7 @@ function boxedCellChart(cell, width, chartHeight) {
 
 function boxedVerticalChart(metric, width, chartHeight) {
   const innerWidth = Math.max(8, width - 2);
-  const title = `${metric.title} ${metric.value}`;
+  const title = chartHeaderTitle(metric);
   const header = `┌${truncateVisible(title, innerWidth).padEnd(innerWidth, '─')}┐`;
   const body = metric.type === 'meter'
     ? meterBarRows(metric, innerWidth, chartHeight)

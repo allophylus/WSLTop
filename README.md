@@ -32,13 +32,48 @@ Expanded window with thicker gauge bars, Bright theme:
 
 ![Expanded layout, Bright theme](docs/screenshots/dashboard-expanded-bright.png)
 
-Percentage widgets (`CPU WSL`/`HOST`, `RAM WSL`/`HOST`, `GPU`, `BATTERY`) show the current value as a single htop-style fill bar (`[███████░░░░] 62.3%`) rather than a historical trend — what matters for a percentage is how full it is right now, not its recent shape. `NET`, `DSK`, and `TEMP` are rates/temperatures rather than percentages, so they keep the historical bar-chart sparkline showing recent trend.
+Percentage widgets (`CPU`, `RAM`, `GPU`, `BATTERY`) show the current value as a single htop-style fill bar (`[███████░░░░] 62.3%`) rather than a historical trend — what matters for a percentage is how full it is right now, not its recent shape. `NETWORK`, `DISK`, `GPU PWR`, and `TEMP` are rates/temperatures rather than percentages, so they keep the historical bar-chart sparkline showing recent trend.
 
 CPU/RAM labels:
 
-- `CPU WSL` / `CPU HOST` and `RAM WSL` / `RAM HOST` are always separate, full-size widgets — never overlaid in a single box — so each stays readable on its own even in a small window. `WSL` is the WSL VM's own `/proc` reading; `HOST` is the Windows host reading (from PowerShell/CIM), shown as `-` when host metrics aren't available (e.g. `--no-host`, or PowerShell/CIM query failure).
-- `WSL vCPU cores` below the widgets breaks the WSL total down per virtual core — this is additional detail, not a duplicate of the `CPU WSL` widget.
-- They are related because WSL runs on the host, but they are not the same measurement scope: WSL CPU is Linux's `/proc` view of the VM, Host CPU is the physical Windows machine.
+- `CPU` and `RAM` are each one box containing two tagged gauge bars, `W` and `H` — never overlaid into a single bar — so both stay readable on their own even in a small window. `W` is the WSL VM's own `/proc` reading; `H` is the Windows host reading (from PowerShell/CIM), shown as `-` when host metrics aren't available (e.g. `--no-host`, or PowerShell/CIM query failure).
+- They are related because WSL runs on the host, but they are not the same measurement scope: `W` is Linux's `/proc` view of the VM, `H` is the physical Windows machine.
+
+## What's on the dashboard
+
+**Header (2 lines, always visible):**
+
+- Line 1 — `WSL Top`, the WSL hostname and IP address, and the current date/time right-aligned.
+- Line 2 — key hints: `q` quits, `v` cycles the bottom panel, `c` cycles the color theme, `i` cycles the refresh interval, `s` toggles the raw all-sensors view.
+
+**System summary (2 lines, below the header):**
+
+- `System` — load average, uptime, and swap used/total.
+- `Detail` — GPU model and VRAM used/total (when known), battery or power-rail wattage, the temperature sensor source label(s), and either the LibreHardwareMonitor sensor count or a host-metrics error message.
+
+**Chart grid (the main widgets, laid out as boxes or compact sparklines depending on window size):**
+
+| Widget | Shows |
+|---|---|
+| `CPU` | `W` (WSL `/proc` CPU usage %) and `H` (Windows host CPU usage %, via PowerShell/CIM) as two fill-bar gauges in one box |
+| `RAM` | `W` (WSL memory usage %, with used/total bytes) and `H` (Windows host memory usage %, with used/total bytes) as two fill-bar gauges in one box |
+| `GPU` | GPU utilization % as a fill-bar gauge (NVIDIA via `nvidia-smi`, or iGPU/dGPU via LibreHardwareMonitor) |
+| `GPU PWR` | GPU power draw in watts, as a historical sparkline |
+| `BATTERY` | Battery capacity % as a fill-bar gauge |
+| `NETWORK` | `↓` download and `↑` upload throughput (bytes/sec), each as a historical sparkline |
+| `DISK` | `R` read and `W` write throughput (bytes/sec), each as a historical sparkline |
+| `TEMP` | Primary temperature sensor reading, as a historical sparkline |
+
+Any widget shows `-` instead of failing when its data source isn't available.
+
+**Bottom panel (toggle with `v` or `Tab`):**
+
+1. **CPU** (default) — top processes sorted by CPU%.
+2. **Memory** — top processes sorted by resident memory (RSS).
+3. **Network** — top processes sorted by open socket count (a proxy for network activity, not throughput).
+4. **Ports** — listening TCP/UDP sockets with address, port, and owning process.
+
+**All sensors view (`s` key):** replaces the dashboard with a flat, scrollable list of every sensor LibreHardwareMonitor reports (50+ on a typical machine), for finding a specific sensor name/value not surfaced by any summarized widget. Shows a hint to install/enable LibreHardwareMonitor when it isn't available.
 
 Hardware-dependent metrics are shown when WSL or an optional Windows sensor backend exposes them:
 
@@ -72,24 +107,15 @@ Press `c` to cycle through four color themes, shown in the header banner:
 
 The theme choice only affects colors on data series/glyphs; it doesn't change layout, and terminal font size still isn't something WSL Top can control (see "Adaptive layout" above).
 
-## Optional sensor backends
+## Optional sensor backend: LibreHardwareMonitor
 
-WSL often cannot see host temperature, fan, or GPU/iGPU telemetry directly. The built-in checks are intentionally dependency-free and best-effort. For richer readings, WSL Top can optionally query Windows-side tools through `powershell.exe`.
+WSL often cannot see host temperature, fan, or GPU/iGPU telemetry directly. The built-in checks (`/sys/class/hwmon`, `/sys/class/drm`, `nvidia-smi`) are dependency-free and best-effort, but they only go so far — accurate CPU package temperature, fan speeds, voltage rails, and non-NVIDIA GPU/iGPU utilization need a Windows-side sensor tool.
 
-| Tool | CPU temp | GPU/iGPU | Fan/power | WSL access | Notes |
-|---|---:|---:|---:|---|---|
-| LibreHardwareMonitor | Yes | Often | Often | PowerShell + `LibreHardwareMonitorLib.dll` | Supported by WSL Top when installed |
-| OpenHardwareMonitor | Yes | Some | Some | WMI or helper script | Older and less maintained |
-| HWiNFO | Yes | Yes | Yes | Windows helper bridge | Excellent sensor coverage, but more complex to integrate |
-| NVIDIA `nvidia-smi` | No | NVIDIA only | NVIDIA GPU power/temp | Native WSL command if installed/exposed | Already supported when available |
-| Windows Performance Counters | No | Utilization only | No | PowerShell | Useful for iGPU/dGPU utilization, not temperatures |
-| WMI `MSAcpi_ThermalZoneTemperature` | Sometimes | No | No | PowerShell | Already attempted; often unavailable or unhelpful |
+**LibreHardwareMonitor is the only such backend WSL Top actually integrates with** (queried through `powershell.exe` + `LibreHardwareMonitorLib.dll`). It's entirely optional — WSL Top runs fine without it and shows `-` for the metrics it would have provided.
 
-Recommended path:
-
-1. Install LibreHardwareMonitor on Windows.
+1. Install LibreHardwareMonitor on Windows (see setup below).
 2. Run WSL Top normally; it auto-detects LibreHardwareMonitor at `%LOCALAPPDATA%\Programs\LibreHardwareMonitor\LibreHardwareMonitorLib.dll`.
-3. Keep WSL Top functional without those tools by showing `-` when a metric is not exposed.
+3. Without it, WSL Top stays fully functional and shows `-` for the metrics it would have provided.
 
 ### LibreHardwareMonitor setup
 
