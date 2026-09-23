@@ -12,6 +12,24 @@ Terminal font size is controlled by your terminal emulator, not by an app writin
 - When the window is too small for boxes, WSL Top automatically switches to a compact, borderless layout: one line for the label/value and one line for the widget body per widget. This uses far less vertical space per widget, so all widgets keep showing instead of being dropped.
 - If a terminal is so small that even the compact layout can't fit every widget, WSL Top drops widgets one at a time from the end (never truncating a box or line mid-render) and prints a `... N more widget(s) hidden` note; resizing the window larger brings them back.
 
+## Screenshots
+
+Compact layout (narrow window, borderless widgets):
+
+![Compact layout](docs/screenshots/dashboard-compact.png)
+
+Boxed layout, Black & White theme:
+
+![Boxed layout, Black & White theme](docs/screenshots/dashboard-boxed-bw.png)
+
+Expanded window with thicker gauge bars, Black & White theme:
+
+![Expanded layout, Black & White theme](docs/screenshots/dashboard-expanded-bw.png)
+
+Expanded window with thicker gauge bars, Bright theme:
+
+![Expanded layout, Bright theme](docs/screenshots/dashboard-expanded-bright.png)
+
 Percentage widgets (`CPU WSL`/`HOST`, `RAM WSL`/`HOST`, `GPU`, `BATTERY`) show the current value as a single htop-style fill bar (`[███████░░░░] 62.3%`) rather than a historical trend — what matters for a percentage is how full it is right now, not its recent shape. `NET`, `DSK`, and `TEMP` are rates/temperatures rather than percentages, so they keep the historical bar-chart sparkline showing recent trend.
 
 CPU/RAM labels:
