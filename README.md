@@ -211,6 +211,24 @@ Run `wsl.exe --version` from a Windows terminal (or `cat /proc/version` from ins
 
 ## Run
 
+**Prerequisite: Node.js must be installed _inside_ WSL** (Node.js >= 18, see `engines` in `package.json`). Windows Node.js does not work: WSL hands the Linux path (`\\wsl.localhost\...`) to `cmd.exe`, which rejects UNC paths and fails with `Cannot find module 'C:\Windows\wsl-top.js'`.
+
+Install it natively in WSL, for example with [nvm](https://github.com/nvm-sh/nvm):
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+```
+
+Confirm the WSL Node is the one being used — `which node` should show a path under `~/.nvm` (or `/usr/...`), never `/mnt/c/...`:
+
+```bash
+which node
+```
+
+WSL Top itself has **no npm dependencies** — it only uses Node.js built-ins, so `npm install` is not required.
+
 From WSL:
 
 ```bash
