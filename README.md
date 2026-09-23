@@ -134,13 +134,6 @@ Expected files:
 %LOCALAPPDATA%\Programs\LibreHardwareMonitor\LibreHardwareMonitorLib.dll
 ```
 
-Current verified install:
-
-```text
-C:\Users\REDACTED\AppData\Local\Programs\LibreHardwareMonitor\LibreHardwareMonitor.exe
-C:\Users\REDACTED\AppData\Local\Programs\LibreHardwareMonitor\LibreHardwareMonitorLib.dll
-```
-
 Install/update manually:
 
 1. Download the latest `LibreHardwareMonitor.zip` release from <https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/releases>.
