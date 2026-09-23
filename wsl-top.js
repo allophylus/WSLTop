@@ -53,8 +53,12 @@ function hue(name) {
 const PROC_DIR = '/proc';
 const SECTOR_SIZE = 512;
 const DEFAULT_INTERVAL_MS = 1000;
-const WINDOWS_HOST_REFRESH_MS = 10000;
-const WINDOWS_HOST_TIMEOUT_MS = 9000;
+const WINDOWS_HOST_REFRESH_MS = 15000;
+// The LibreHardwareMonitor sensor read (Add-Type reflection load + hardware
+// enumeration) alone can take 7-9s under normal load, and longer when the
+// host is busy (e.g. installs, other CPU-heavy processes) - 9000ms cut it
+// too close and caused "Windows host metrics unavailable" on a busy host.
+const WINDOWS_HOST_TIMEOUT_MS = 15000;
 const WINDOWS_HOST_GPU_TIMEOUT_MS = 30000;
 const HISTORY_LENGTH = 72;
 const CLK_TCK = readClockTicks();
