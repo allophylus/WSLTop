@@ -1,0 +1,14 @@
+{
+  "name": "wsl-top",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dependency-free WSL terminal monitor",
+  "main": "wsl-top.js",
+  "scripts": {
+    "start": "node wsl-top.js",
+    "wsl-top": "node wsl-top.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
