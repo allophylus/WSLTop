@@ -1,6 +1,6 @@
 # WSL Top
 
-Dependency-free terminal monitor for WSL.
+Zero-npm-dependency terminal monitor for WSL — no packages to install, just Node.js built-ins. Full host sensor coverage (GPU/iGPU utilization, fan speeds, voltage rails, accurate CPU package temperature, and the raw "all sensors" view) is an optional feature that requires installing LibreHardwareMonitor on Windows; without it, WSL Top still runs fine and shows `-` for those readings.
 
 It renders live WSL CPU, memory, swap, load, uptime, network, disk, sensor, chart, and top-process metrics from `/proc` and `/sys`. When `powershell.exe` is available inside WSL, it also shows lightweight Windows host CPU and RAM metrics.
 
